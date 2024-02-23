@@ -35,7 +35,7 @@ def create_table():
     except sqlite3.OperationalError:
         pass
     try:
-        cur.execute("CREATE TABLE question(workbook_id INTEGER, question_id INTEGER PRIMARY KEY AUTOINCREMENT, question TEXT, answer TEXT, explanation TEXT, choise1 TEXT, choise2 TEXT, choise3 TEXT, choise4 TEXT, choise5 TEXT, choise6 TEXT, choise7 TEXT, choise8 TEXT, choise9 TEXT, FOREIGN KEY(workbook_id) references workbook(workbook_id));")
+        cur.execute("CREATE TABLE question(workbook_id INTEGER, question_id INTEGER PRIMARY KEY AUTOINCREMENT, question TEXT, answer TEXT, explanation TEXT, choice1 TEXT, choice2 TEXT, choice3 TEXT, choice4 TEXT, choice5 TEXT, choice6 TEXT, choice7 TEXT, choice8 TEXT, choice9 TEXT, FOREIGN KEY(workbook_id) references workbook(workbook_id));")
     except sqlite3.OperationalError:
         pass
 
@@ -59,8 +59,8 @@ def delete_table_workbook(workbook_id):
     con.commit()
 
 #questionのテーブルに追加する関数
-def insert_table_question(workbook_id,question,answer,explanation=None,choise1=None,choise2=None,choise3=None,choise4=None,choise5=None,choise6=None,choise7=None,choise8=None,choise9=None):
-    cur.execute("INSERT INTO question(workbook_id, question, answer, explanation, choise1, choise2, choise3, choise4, choise5, choise6, choise7, choise8, choise9) values(:workbook_id, :question, :answer, :explanation, :choise1, :choise2, :choise3, :choise4, :choise5, :choise6, :choise7, :choise8, :choise9);",{"workbook_id": workbook_id, "question": question, "answer": answer, "explanation": explanation, "choise1": choise1, "choise2": choise2, "choise3" : choise3, "choise4": choise4, "choise5": choise5, "choise6": choise6, "choise7": choise7, "choise8": choise8, "choise9": choise9})
+def insert_table_question(workbook_id,question,answer,explanation=None,choice1=None,choice2=None,choice3=None,choice4=None,choice5=None,choice6=None,choice7=None,choice8=None,choice9=None):
+    cur.execute("INSERT INTO question(workbook_id, question, answer, explanation, choice1, choice2, choice3, choice4, choice5, choice6, choice7, choice8, choice9) values(:workbook_id, :question, :answer, :explanation, :choice1, :choice2, :choice3, :choice4, :choice5, :choice6, :choice7, :choice8, :choice9);",{"workbook_id": workbook_id, "question": question, "answer": answer, "explanation": explanation, "choice1": choice1, "choice2": choice2, "choice3" : choice3, "choice4": choice4, "choice5": choice5, "choice6": choice6, "choice7": choice7, "choice8": choice8, "choice9": choice9})
     con.commit()
 
 #questionのテーブルを参照する関数
@@ -120,17 +120,18 @@ class HomeScreen(Screen):
         #root = ScrollView(size_hint=(1, None), size=(Window.width, Window.height))
         #root.add_widget(self.layout) 
 
-    def show_selected_value(self, spinner, choise):
+    def show_selected_value(self, spinner, choice):
         print(self.layout)
-        if choise == '問題を追加する':
+        if choice == '問題を追加する':
             self.manager.current = "question_screen"
-        elif choise == '問題を解く':
+        elif choice == '問題を解く':
             self.manager.current = "question_screen"
-        elif choise == '名前を変える':
+        elif choice == '名前を変える':
             print("変える")
-        elif choise == '削除する':
+        elif choice == '削除する':
             print("削除")
-        
+        elif choice == 'この問題集に問題を追加する':
+            self.manager.current = 'create_question'
         else:
             print("eroor")
 
@@ -192,9 +193,9 @@ class QuestionScreen(Screen):
         self.button_add_question.bind(on_press=self.solve_buttonClicked)
         self.layout.add_widget(self.button_add_question)
 
-    def show_selected_value(self, spinner, choise):
+    def show_selected_value(self, spinner, choice):
         print(self.layout)
-        if choise == '削除する':
+        if choice == '削除する':
             print("削除") 
         else:
             print("eroor")
@@ -212,14 +213,71 @@ class QuestionScreen(Screen):
     def solve_buttonClicked(self, instance):
         self.manager.current = "home_screen"
         print("solve")
-        
+
+#追加ページ       
+# 1ページ目のクラス定義
+class CreateQuestionScreen(Screen):
+    def __init__(self, **kwargs):
+        super(CreateQuestionScreen, self).__init__(**kwargs)
+        layout = BoxLayout(orientation='vertical')
+
+        layout.add_widget(Label(text='問題文'))
+        layout.add_widget(TextInput(hint_text='問題文文字入力'))
+        layout.add_widget(Button(text='問題文撮影ボタン'))
+
+        # 画面遷移を行うメソッドを定義
+        def switch_to_answer_screen(instance):
+            self.manager.current = 'answer'
+
+        next_page_button = Button(text='次のページへ')
+        next_page_button.bind(on_press=switch_to_answer_screen)
+        layout.add_widget(next_page_button)
+
+        self.add_widget(layout)
+
+# 2ページ目のクラスは同じままで問題ありません。
+
+# 2ページ目のクラス定義
+class AnswerScreen(Screen):
+    def __init__(self, **kwargs):
+        super(AnswerScreen, self).__init__(**kwargs)
+        layout = BoxLayout(orientation='vertical')
+
+        layout.add_widget(Label(text='解答'))
+        layout.add_widget(TextInput(hint_text='解答欄1入力'))
+
+        layout.add_widget(Label(text='誤答'))
+        layout.add_widget(TextInput(hint_text='誤答欄1入力'))
+
+        layout.add_widget(Label(text='解説'))
+        layout.add_widget(TextInput(hint_text='解説文入力'))
+        layout.add_widget(Button(text='解説文撮影ボタン'))
+
+        # 画面遷移を行うメソッドを定義
+        def switch_to_question_screen(instance):
+            self.manager.current = 'create_question'
+
+        back_button = Button(text='戻る')
+        back_button.bind(on_press=switch_to_question_screen)
+        layout.add_widget(back_button)
+
+        layout.add_widget(Button(text='登録ボタン'))
+
+        self.add_widget(layout)
+
 
 class MainApp(App):
     def build(self):
         sm = ScreenManager()
         sm.add_widget(HomeScreen(name="home_screen"))
         sm.add_widget(QuestionScreen(name="question_screen"))
+        sm.add_widget(CreateQuestionScreen(name='create_question'))
+        sm.add_widget(AnswerScreen(name='answer'))
         return sm
+
+    def on_stop(self):
+        # アプリケーションが終了する際にデータベース接続を閉じる
+        con.close()
 
 if __name__ == "__main__":
     create_table()
