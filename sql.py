@@ -1,4 +1,5 @@
 # sql.py
+
 #初期設定
 import sqlite3
 con = sqlite3.connect("test.db")
