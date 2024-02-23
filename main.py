@@ -1,4 +1,4 @@
-# main.py 
+# main.py
 
 from kivy.lang import Builder
 
