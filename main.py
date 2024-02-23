@@ -21,7 +21,7 @@ from plyer import filechooser
 from PIL import Image as PILImage
 import cv2
 from kivy.uix.camera import Camera
-
+from pytesseract import pytesseract
 #SQL初期設定
 import sqlite3
 con = sqlite3.connect("test.db")
@@ -221,10 +221,12 @@ class CreateQuestionScreen(Screen):
         super(CreateQuestionScreen, self).__init__(**kwargs)
         layout = BoxLayout(orientation='vertical')
 
+        self.question_input = TextInput(hint_text='問題文文字入力')
         layout.add_widget(Label(text='問題文'))
-        layout.add_widget(TextInput(hint_text='問題文文字入力'))
-        layout.add_widget(Button(text='問題文撮影ボタン'))
-
+        layout.add_widget(self.question_input)
+        photo_button = Button(text='問題文撮影ボタン')
+        photo_button.bind(on_press=self.capture_and_recognize_text)
+        layout.add_widget(photo_button)
         # 画面遷移を行うメソッドを定義
         def switch_to_answer_screen(instance):
             self.manager.current = 'answer'
@@ -234,6 +236,18 @@ class CreateQuestionScreen(Screen):
         layout.add_widget(next_page_button)
 
         self.add_widget(layout)
+
+    def capture_and_recognize_text(self, instance):
+        # 画像処理とOCRのコードをここに移植
+        img_path = 'test2.png'  # 仮の画像パス
+        img = cv2.imread(img_path, 0)
+        img = cv2.fastNlMeansDenoising(img, None, 10, 7, 21)
+        
+        pytesseract.tesseract_cmd = "/usr/bin/tesseract"
+        ocr_result = pytesseract.image_to_string(img, lang="eng+jpn")
+        
+        # OCR結果をTextInputに表示
+        self.question_input.text = ocr_result
 
 # 2ページ目のクラスは同じままで問題ありません。
 
