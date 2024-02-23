@@ -1,4 +1,4 @@
-# main.py
+# main.py 
 
 from kivy.lang import Builder
 
@@ -106,7 +106,7 @@ class HomeScreen(Screen):
         for i in range(len(workbook)):
             self.spinner = Spinner(
                 text=workbook[i][1],
-                values=('問題集を作る', '問題を解く', '名前を変える','削除する'),
+                values=('この問題集に問題を追加する', 'この問題集の問題を解く', 'この問題集の名前を変える','この問題集を削除する'),
                 size_hint=(1, None),
                 size=(200, 50),
                 pos_hint={'center_x': .5, 'center_y': .5})
@@ -122,7 +122,7 @@ class HomeScreen(Screen):
 
     def show_selected_value(self, spinner, choise):
         print(self.layout)
-        if choise == '問題集を作る':
+        if choise == '問題を追加する':
             self.manager.current = "question_screen"
         elif choise == '問題を解く':
             self.manager.current = "question_screen"
@@ -139,7 +139,7 @@ class HomeScreen(Screen):
         self.layout.remove_widget(self.button_add_question)
         self.spinner = Spinner(
                 text="問題集" + str(self.count),
-                values=('問題集を作る', '問題を解く', '名前を変える','削除する'),
+                values=('問題を追加する', '問題を解く', '名前を変える','削除する'),
                 size_hint=(1, None),
                 size=(200, 50),
                 pos_hint={'center_x': .5, 'center_y': .5})
