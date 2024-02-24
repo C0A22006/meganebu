@@ -214,6 +214,31 @@ class QuestionScreen(Screen):
         self.manager.current = "home_screen"
         print("solve")
 
+    def add_buttonClicked(self, instance): 
+        insert_table_question("3","パンはパンでも食べられないパンは何だ？", "答え", "解説", "選択肢1", "選択肢2", "選択肢3", "選択肢4", "選択肢5", "選択肢6", "選択肢7", "選択肢8")
+        self.layout.remove_widget(self.button_add_question)
+        self.spinner = Spinner(
+                text="パンはパンでも食べられないパンは何だ？",
+                values=('削除する'),
+                size_hint=(1, None),
+                size=(200, 50),
+                pos_hint={'center_x': .5, 'center_y': .5})
+        self.spinner.bind(text=self.show_selected_value)
+        self.layout.add_widget(self.spinner)
+        self.count += 1
+        try:
+            self.button_add_question = Button(text="新しい問題を作る", size_hint=(1, 0.3), size=(200, 50))
+            self.button_add_question.bind(on_press=self.add_buttonClicked)
+            self.layout.add_widget(self.button_add_question)
+        except AttributeError:
+            pass
+        try:
+            self.button_add_question = Button(text="問題を解く", size_hint=(1, 0.3), size=(200, 50))
+            self.button_add_question.bind(on_press=self.solve_buttonClicked)
+            self.layout.add_widget(self.button_add_question)
+        except AttributeError:
+            pass
+
 #追加ページ       
 # 1ページ目のクラス定義
 class CreateQuestionScreen(Screen):
@@ -275,9 +300,18 @@ class AnswerScreen(Screen):
         back_button.bind(on_press=switch_to_question_screen)
         layout.add_widget(back_button)
 
-        layout.add_widget(Button(text='登録ボタン'))
+        
+        # '登録ボタン'用のボタンが既にあると仮定
+        registration_button = Button(text='登録ボタン')
+        registration_button.bind(on_press=self.switch_to_home_screen)
+        layout.add_widget(registration_button)
 
         self.add_widget(layout)
+
+    def switch_to_home_screen(self, instance):
+        HomeScreen.add_buttonClicked
+        self.manager.current = 'home_screen'
+
 
 
 class MainApp(App):
