@@ -1,5 +1,5 @@
 # main.py 
-
+import kivy
 from kivy.lang import Builder
 
 import os
@@ -124,8 +124,8 @@ class HomeScreen(Screen):
         print(self.layout)
         if choice == '問題を追加する':
             self.manager.current = "question_screen"
-        elif choice == '問題を解く':
-            self.manager.current = "question_screen"
+        elif choice == 'この問題集の問題を解く':
+            self.manager.current = "new_screen"
         elif choice == '名前を変える':
             print("変える")
         elif choice == '削除する':
@@ -157,8 +157,8 @@ class HomeScreen(Screen):
 
     def open_buttonClicked(self, instance):
         self.manager.current = "question_screen"
-        
-class QuestionScreen(Screen):
+
+class NewScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.layout = GridLayout(cols=1)
@@ -172,6 +172,85 @@ class QuestionScreen(Screen):
         self.count = 1
         for i in range(len(question)):
             print(question[i][2])
+            if len(question[i][2]) > 20:
+                ans = str(question[i][2])[0:20] + "～"
+            else:
+                ans = question[i][2]
+            self.spinner = Spinner(
+                text=ans,
+                values=('削除する'),
+                size_hint=(1, None),
+                size=(200, 50),
+                pos_hint={'center_x': .5, 'center_y': .5})
+            self.spinner.bind(text=self.show_selected_value)
+            self.layout.add_widget(self.spinner)
+            self.count += 1
+
+        self.button_add_question = Button(text="新しい問題を作る", size_hint=(1, 0.3), size=(200, 50))
+        self.button_add_question.bind(on_press=self.create_buttonClicked)
+        self.layout.add_widget(self.button_add_question)
+        self.button_add_question = Button(text="問題を解く", size_hint=(1, 0.3), size=(200, 50))
+        self.button_add_question.bind(on_press=self.solve_buttonClicked)
+        self.layout.add_widget(self.button_add_question)
+
+    def add_buttonClicked(self, instance):
+        insert_table_question("1","パンはパンでも食べられないパンは何だ？", "答え", "解説", "選択肢1", "選択肢2", "選択肢3", "選択肢4", "選択肢5", "選択肢6", "選択肢7", "選択肢8","選択肢9")
+        
+        self.layout.remove_widget(self.button_add_question)
+        self.layout.remove_widget(self.button_add_question)
+        self.spinner = Spinner(
+                text="パンはパンでも食べられないパンは何だ？",
+                values=('削除する'),
+                size_hint=(1, None),
+                size=(200, 50),
+                pos_hint={'center_x': .5, 'center_y': .5})
+        self.spinner.bind(text=self.show_selected_value)
+        self.layout.add_widget(self.spinner)
+        self.count += 1
+        try:
+            self.button_add_question = Button(text="新しい問題を作る", size_hint=(1, 0.3), size=(200, 50))
+            self.button_add_question.bind(on_press=self.add_buttonClicked)
+            self.layout.add_widget(self.button_add_question)
+        except AttributeError:
+            pass
+        try:
+            self.button_add_question = Button(text="問題を解く", size_hint=(1, 0.3), size=(200, 50))
+            self.button_add_question.bind(on_press=self.solve_buttonClicked)
+            self.layout.add_widget(self.button_add_question)
+            con.close()
+        except AttributeError:
+            pass
+
+    def show_selected_value(self, spinner, choice):
+        pass
+
+
+    def home_back_buttonClicked(self, instance):
+        self.manager.current = "home_screen"
+        print("home")
+
+    def create_buttonClicked(self, instance):
+        self.manager.current = "home_screen"
+        print("create")
+
+    def solve_buttonClicked(self, instance):
+        self.manager.current = "home_screen"
+        print("solve")
+
+class QuestionScreen(Screen):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.layout = GridLayout(cols=1)
+        self.add_widget(self.layout)
+        self.button_home = Button(text="＞ホームにもどる", size_hint=(0.5, 0.1), size=(200, 50))
+        self.button_home.bind(on_press=self.home_back_buttonClicked)
+        self.layout.add_widget(self.button_home)
+        label = Label(text="問題集１", font_size=20, pos_hint=0.3, color=(0,0,0,1))
+        self.layout.add_widget(label)
+        question = select_table_question()
+        self.count = 1
+        for i in range(len(question)):
+            print(f"{question[i][2]}")
             if len(question[i][2]) > 20:
                 ans = str(question[i][2])[0:20] + "～"
             else:
@@ -214,30 +293,6 @@ class QuestionScreen(Screen):
         self.manager.current = "home_screen"
         print("solve")
 
-    def add_buttonClicked(self, instance): 
-        insert_table_question("3","パンはパンでも食べられないパンは何だ？", "答え", "解説", "選択肢1", "選択肢2", "選択肢3", "選択肢4", "選択肢5", "選択肢6", "選択肢7", "選択肢8")
-        self.layout.remove_widget(self.button_add_question)
-        self.spinner = Spinner(
-                text="パンはパンでも食べられないパンは何だ？",
-                values=('削除する'),
-                size_hint=(1, None),
-                size=(200, 50),
-                pos_hint={'center_x': .5, 'center_y': .5})
-        self.spinner.bind(text=self.show_selected_value)
-        self.layout.add_widget(self.spinner)
-        self.count += 1
-        try:
-            self.button_add_question = Button(text="新しい問題を作る", size_hint=(1, 0.3), size=(200, 50))
-            self.button_add_question.bind(on_press=self.add_buttonClicked)
-            self.layout.add_widget(self.button_add_question)
-        except AttributeError:
-            pass
-        try:
-            self.button_add_question = Button(text="問題を解く", size_hint=(1, 0.3), size=(200, 50))
-            self.button_add_question.bind(on_press=self.solve_buttonClicked)
-            self.layout.add_widget(self.button_add_question)
-        except AttributeError:
-            pass
 
 #追加ページ       
 # 1ページ目のクラス定義
@@ -309,8 +364,8 @@ class AnswerScreen(Screen):
         self.add_widget(layout)
 
     def switch_to_home_screen(self, instance):
-        HomeScreen.add_buttonClicked
-        self.manager.current = 'home_screen'
+        NewScreen().add_buttonClicked(instance)
+        self.manager.current = 'new_screen'
 
 
 
@@ -319,6 +374,7 @@ class MainApp(App):
         sm = ScreenManager()
         sm.add_widget(HomeScreen(name="home_screen"))
         sm.add_widget(QuestionScreen(name="question_screen"))
+        sm.add_widget(NewScreen(name="new_screen"))
         sm.add_widget(CreateQuestionScreen(name='create_question'))
         sm.add_widget(AnswerScreen(name='answer'))
         return sm

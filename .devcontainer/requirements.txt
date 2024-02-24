@@ -1,0 +1,7 @@
+buildozer
+kivy
+kivymd
+pytesseract
+opencv-python
+numpy
+japanize-kivy

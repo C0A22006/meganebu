@@ -1,0 +1,6 @@
+{
+    "name": "U2024", 
+    "build": {
+        "dockerfile": "Dockerfile"
+    }
+}
